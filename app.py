@@ -34,7 +34,7 @@ with tab1:
     st.subheader("UIATS: Unruptured Intracranial Aneurysm Treatment Score")
     col_treat, col_cons = st.columns(2)
 
-    # --- SPALTE 1: BEHANDLUNG BEGÜNSTIGEND (JETZT GRÜN) ---
+    # --- SPALTE 1: BEHANDLUNG BEGÜNSTIGEND (GRÜN) ---
     with col_treat:
         st.success("#### 1. BEHANDLUNG BEGÜNSTIGEND")
         
@@ -52,7 +52,8 @@ with tab1:
             t_alc = st.radio("Alkoholabusus", ["Ja (1)", "N/A (0)"], index=1, horizontal=True)
 
         with st.expander("Klinische Symptome im Zusammenhang mit UIA", expanded=True):
-            t_cnp = st.radio("Hirnnervenausfall / Masseneffekt", ["Ja (4)", "N/A (0)"], index=1, horizontal=True)
+            t_cnp = st.radio("Hirnnervenausfall", ["Ja (4)", "N/A (0)"], index=1, horizontal=True)
+            t_mfx = st.radio("Masseneffekt (klinisch oder radiologisch)", ["Ja (4)", "N/A (0)"], index=1, horizontal=True)
             t_thr = st.radio("Thromboembolische Ereignisse (aus Aneurysma)", ["Ja (3)", "N/A (0)"], index=1, horizontal=True)
             t_epi = st.radio("Epilepsie", ["Ja (1)", "N/A (0)"], index=1, horizontal=True)
 
@@ -77,7 +78,7 @@ with tab1:
             t_mult = st.radio("Aneurysma-Multiplizität", ["Ja (1)", "N/A (0)"], index=1, horizontal=True)
             t_qol = st.radio("Angst / Reduzierte Lebensqualität", ["Ja (2)", "N/A (0)"], index=1, horizontal=True)
 
-    # --- SPALTE 2: KONSERVATIV BEGÜNSTIGEND (JETZT ROT) ---
+    # --- SPALTE 2: KONSERVATIV BEGÜNSTIGEND (ROT) ---
     with col_cons:
         st.error("#### 2. KONSERVATIV BEGÜNSTIGEND")
         st.info("Basis-Interventionsrisiko: **5 Punkte**")
@@ -102,7 +103,7 @@ with tab1:
             c_size_risk = st.radio("Größe (Konservativ-Risiko)", ["<6mm (0)", "6-10mm (1)", "10.1-20mm (3)", ">20mm (5)"], index=0, horizontal=True)
 
     # --- BERECHNUNG UIATS ---
-    t_list = [t_age, t_sah, t_fam, t_eth, t_smk, t_htn, t_adpkd, t_drug, t_alc, t_cnp, t_thr, t_epi, 
+    t_list = [t_age, t_sah, t_fam, t_eth, t_smk, t_htn, t_adpkd, t_drug, t_alc, t_cnp, t_mfx, t_thr, t_epi, 
               t_size, t_morph, t_ratio, t_loc, t_growth, t_denovo, t_steno, t_mult, t_qol]
     c_list = [c_life, c_neuro, c_coag, c_psych, c_complex, c_age, c_size_risk]
     
