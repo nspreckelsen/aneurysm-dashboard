@@ -34,13 +34,13 @@ with tab1:
     st.subheader("UIATS: Unruptured Intracranial Aneurysm Treatment Score")
     col_treat, col_cons = st.columns(2)
 
-    # --- SPALTE 1: BEHANDLUNG BEGÜNSTIGEND ---
+    # --- SPALTE 1: BEHANDLUNG BEGÜNSTIGEND (JETZT GRÜN) ---
     with col_treat:
-        st.error("#### 1. BEHANDLUNG BEGÜNSTIGEND")
+        st.success("#### 1. BEHANDLUNG BEGÜNSTIGEND")
         
         # PATIENT
         st.markdown("##### **PATIENT**")
-        with st.expander("Risikofaktoren", expanded=True):
+        with st.expander("Risikofaktoren-Häufigkeit", expanded=True):
             t_age = st.radio("Alter (Behandlung)", ["<40 (4)", "41-60 (3)", "61-70 (2)", "71-80 (1)", ">80 (0)", "N/A (0)"], index=5, horizontal=True)
             t_sah = st.radio("Frühere SAB (anderes Aneurysma)", ["Ja (4)", "N/A (0)"], index=1, horizontal=True)
             t_fam = st.radio("Familienanamnese für SAB", ["Ja (3)", "N/A (0)"], index=1, horizontal=True)
@@ -77,9 +77,9 @@ with tab1:
             t_mult = st.radio("Aneurysma-Multiplizität", ["Ja (1)", "N/A (0)"], index=1, horizontal=True)
             t_qol = st.radio("Angst / Reduzierte Lebensqualität", ["Ja (2)", "N/A (0)"], index=1, horizontal=True)
 
-    # --- SPALTE 2: KONSERVATIV BEGÜNSTIGEND ---
+    # --- SPALTE 2: KONSERVATIV BEGÜNSTIGEND (JETZT ROT) ---
     with col_cons:
-        st.success("#### 2. KONSERVATIV BEGÜNSTIGEND")
+        st.error("#### 2. KONSERVATIV BEGÜNSTIGEND")
         st.info("Basis-Interventionsrisiko: **5 Punkte**")
         
         # PATIENT
