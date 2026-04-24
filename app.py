@@ -40,7 +40,7 @@ with tab1:
         
         # PATIENT
         st.markdown("##### **PATIENT**")
-        with st.expander("Risikofaktoren-Häufigkeit", expanded=True):
+        with st.expander("Risikofaktoren", expanded=True):
             t_age = st.radio("Alter (Behandlung)", ["<40 (4)", "41-60 (3)", "61-70 (2)", "71-80 (1)", ">80 (0)", "N/A (0)"], index=5, horizontal=True)
             t_sah = st.radio("Frühere SAB (anderes Aneurysma)", ["Ja (4)", "N/A (0)"], index=1, horizontal=True)
             t_fam = st.radio("Familienanamnese für SAB", ["Ja (3)", "N/A (0)"], index=1, horizontal=True)
