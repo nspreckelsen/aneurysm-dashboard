@@ -3,28 +3,29 @@ from fpdf import FPDF
 from datetime import datetime
 
 # Seiteneinstellungen
-st.set_page_config(page_title="UIATS & PHASES Pro Dashboard", layout="wide")
+st.set_page_config(page_title="UIATS & PHASES Klinisches Dashboard", layout="wide")
 
 # Helfer-Funktion zum Extrahieren der Punkte aus dem Auswahltext
 def get_pts(s):
     if not s or "(" not in s: return 0
     try:
+        # Extrahiert die Zahl zwischen den Klammern
         return int(s.split('(')[-1].split(')')[0])
     except:
         return 0
 
 # --- Header ---
-st.title("🧠 Clinical Aneurysm Decision Suite")
-st.caption("Basierend auf UIATS (Neurology 2015) & PHASES (Lancet Neurol 2014)")
+st.title("🧠 Klinische Aneurysma-Entscheidungshilfe")
+st.caption("Strukturierte Auswertung nach UIATS (Neurology 2015) & PHASES (Lancet Neurol 2014)")
 
 # --- Patienten- & Arzt-Info in der Sidebar ---
 with st.sidebar:
     st.header("📋 Stammdaten")
-    patient_id = st.text_input("Patienten ID / Name", placeholder="ID12345")
-    clinician = st.text_input("Behandelnder Arzt", placeholder="Dr. Med. X")
+    patient_id = st.text_input("Patienten ID / Name", placeholder="z.B. ID12345")
+    clinician = st.text_input("Behandelnder Arzt", placeholder="Dr. Med. Muster")
     st.divider()
     st.markdown("### 📏 Referenz-Formeln")
-    st.info("**Aspect Ratio (AR):** Höhe / Halsbreite\n\n**Size Ratio (SR):** Höhe / Elterngeschäft")
+    st.info("**Aspect Ratio (AR):** Höhe / Halsbreite\n\n**Size Ratio (SR):** Höhe / Durchmesser Ursprungsgefäß")
 
 # --- Tabs ---
 tab1, tab2 = st.tabs(["📊 UIATS Dashboard", "📈 PHASES Score"])
@@ -34,14 +35,14 @@ with tab1:
     st.subheader("UIATS: Unruptured Intracranial Aneurysm Treatment Score")
     col_treat, col_cons = st.columns(2)
 
-    # --- SPALTE 1: FAVORING TREATMENT ---
+    # --- SPALTE 1: BEHANDLUNG BEGÜNSTIGEND (TREATMENT) ---
     with col_treat:
-        st.error("### 1. FAVORING TREATMENT")
+        st.error("### 1. BEHANDLUNG BEGÜNSTIGEND")
         
-        # Gruppe: Patient
-        st.markdown("**GROUP: PATIENT**")
-        with st.expander("Risk factor incidence", expanded=True):
-            t_age = st.radio("Alter (T)", ["<40 (4)", "41-60 (3)", "61-70 (2)", "71-80 (1)", ">80 (0)", "N/A (0)"], index=5, horizontal=True)
+        # GRUPPE: PATIENT
+        st.markdown("#### **GRUPPE: PATIENT**")
+        with st.expander("Risikofaktoren-Häufigkeit", expanded=True):
+            t_age = st.radio("Alter (Behandlung)", ["<40 (4)", "41-60 (3)", "61-70 (2)", "71-80 (1)", ">80 (0)", "N/A (0)"], index=5, horizontal=True)
             t_sah = st.radio("Frühere SAB (anderes Aneurysma)", ["Ja (4)", "N/A (0)"], index=1, horizontal=True)
             t_fam = st.radio("Familienanamnese für SAB", ["Ja (3)", "N/A (0)"], index=1, horizontal=True)
             t_eth = st.radio("Ethnie (Japanisch/Finnisch/Inuit)", ["Ja (2)", "N/A (0)"], index=1, horizontal=True)
@@ -51,82 +52,125 @@ with tab1:
             t_drug = st.radio("Drogenabusus (Stimulantien)", ["Ja (2)", "N/A (0)"], index=1, horizontal=True)
             t_alc = st.radio("Alkoholabusus", ["Ja (1)", "N/A (0)"], index=1, horizontal=True)
 
-        with st.expander("Clinical symptoms related to UIA", expanded=True):
+        with st.expander("Klinische Symptome im Zusammenhang mit UIA", expanded=True):
             t_cnp = st.radio("Hirnnervenausfall / Masseneffekt", ["Ja (4)", "N/A (0)"], index=1, horizontal=True)
             t_thr = st.radio("Thromboembolische Ereignisse (aus Aneurysma)", ["Ja (3)", "N/A (0)"], index=1, horizontal=True)
             t_epi = st.radio("Epilepsie", ["Ja (1)", "N/A (0)"], index=1, horizontal=True)
 
-        # Gruppe: Aneurysm
-        st.markdown("**GROUP: ANEURYSM**")
-        with st.expander("Aneurysm Morphology", expanded=True):
-            t_size = st.radio("Größe (T)", ["<3.9mm (0)", "4.0-6.9mm (1)", "7.0-12.9mm (2)", "13.0-24.9mm (3)", ">25mm (4)"], index=0, horizontal=True)
+        # GRUPPE: ANEURYSMA
+        st.markdown("#### **GRUPPE: ANEURYSMA**")
+        with st.expander("Aneurysma-Morphologie", expanded=True):
+            t_size = st.radio("Größe (Behandlung)", ["<3.9mm (0)", "4.0-6.9mm (1)", "7.0-12.9mm (2)", "13.0-24.9mm (3)", ">25mm (4)"], index=0, horizontal=True)
             t_morph = st.radio("Irregularität / Lobulierung", ["Ja (3)", "N/A (0)"], index=1, horizontal=True)
             t_ratio = st.radio("Aspect Ratio >1.6 oder Size Ratio >3", ["Ja (1)", "N/A (0)"], index=1, horizontal=True)
 
-        with st.expander("Aneurysm Location", expanded=True):
-            t_loc = st.radio("Lokalisation", ["Basilariskopf (5)", "A. vertebralis / Basilaris (4)", "AcomA / PcomA (2)", "N/A (0)"], index=3, horizontal=True)
+        with st.expander("Aneurysma-Lokalisation", expanded=True):
+            t_loc = st.radio("Lokalisation (UIATS)", ["Basilariskopf (5)", "A. vertebralis / Basilaris (4)", "AcomA / PcomA (2)", "N/A (0)"], index=3, horizontal=True)
 
-        with st.expander("Other", expanded=True):
-            t_growth = st.radio("Wachstum (serial imaging)", ["Ja (4)", "N/A (0)"], index=1, horizontal=True)
+        with st.expander("Sonstiges (Aneurysma)", expanded=True):
+            t_growth = st.radio("Wachstum (serielle Bildgebung)", ["Ja (4)", "N/A (0)"], index=1, horizontal=True)
             t_denovo = st.radio("De-novo Entwicklung", ["Ja (3)", "N/A (0)"], index=1, horizontal=True)
-            t_steno = st.radio("Contralateral steno-occlusive vessel disease", ["Ja (1)", "N/A (0)"], index=1, horizontal=True)
+            t_steno = st.radio("Kontralaterale steno-okklusive Gefäßerkrankung", ["Ja (1)", "N/A (0)"], index=1, horizontal=True)
 
-        # Gruppe: Other
-        st.markdown("**GROUP: OTHER**")
-        with st.expander("Multiple / QoL", expanded=True):
-            t_mult = st.radio("Multiplizität (Aneurysm multiplicity)", ["Ja (1)", "N/A (0)"], index=1, horizontal=True)
+        # GRUPPE: SONSTIGES
+        st.markdown("#### **GRUPPE: SONSTIGES**")
+        with st.expander("Multiplizität / Lebensqualität", expanded=True):
+            t_mult = st.radio("Aneurysma-Multiplizität", ["Ja (1)", "N/A (0)"], index=1, horizontal=True)
             t_qol = st.radio("Angst / Reduzierte Lebensqualität", ["Ja (2)", "N/A (0)"], index=1, horizontal=True)
 
-    # --- SPALTE 2: FAVORING CONSERVATIVE ---
+    # --- SPALTE 2: KONSERVATIV BEGÜNSTIGEND (CONSERVATIVE) ---
     with col_cons:
-        st.success("### 2. FAVORING CONSERVATIVE")
-        st.info("Baseline Intervention Risk: **5 Punkte**")
+        st.success("### 2. KONSERVATIV BEGÜNSTIGEND")
+        st.info("Basis-Interventionsrisiko: **5 Punkte** (Konstante)")
         
-        # Gruppe: Patient
-        st.markdown("**GROUP: PATIENT**")
-        with st.expander("Life Expectancy", expanded=True):
-            c_life = st.radio("Lebenserwartung", ["<5 Jahre (4)", "5-10 Jahre (3)", ">10 Jahre (1)", "N/A (0)"], index=3, horizontal=True)
+        # GRUPPE: PATIENT
+        st.markdown("#### **GRUPPE: PATIENT**")
+        with st.expander("Lebenserwartung", expanded=True):
+            c_life = st.radio("Eingeschränkte Lebenserwartung", ["<5 Jahre (4)", "5-10 Jahre (3)", ">10 Jahre (1)", "N/A (0)"], index=3, horizontal=True)
 
-        with st.expander("Comorbid Disease", expanded=True):
+        with st.expander("Begleiterkrankungen", expanded=True):
             c_neuro = st.radio("Neurokognitive Störung / Demenz", ["Ja (3)", "N/A (0)"], index=1, horizontal=True)
             c_coag = st.radio("Koagulopathie / Thrombophilie", ["Ja (2)", "N/A (0)"], index=1, horizontal=True)
             c_psych = st.radio("Psychiatrische Erkrankung", ["Ja (2)", "N/A (0)"], index=1, horizontal=True)
 
-        # Gruppe: Treatment / Risk
-        st.markdown("**GROUP: TREATMENT & RISK**")
-        with st.expander("Treatment Difficulty", expanded=True):
+        # GRUPPE: BEHANDLUNG & RISIKO
+        st.markdown("#### **GRUPPE: BEHANDLUNG & RISIKO**")
+        with st.expander("Behandlungsschwierigkeit", expanded=True):
             c_complex = st.radio("Komplexität / Riesenaneurysma", ["Ja (3)", "Einfach (0)"], index=1, horizontal=True)
 
-        with st.expander("Risk related to Patient / Aneurysm", expanded=True):
+        with st.expander("Risiko bezogen auf Patient / Aneurysma", expanded=True):
             c_age = st.radio("Alter (Konservativ-Risiko)", ["<40 (0)", "41-60 (1)", "61-70 (3)", "71-80 (4)", ">80 (5)"], index=0, horizontal=True)
             c_size_risk = st.radio("Größe (Konservativ-Risiko)", ["<6mm (0)", "6-10mm (1)", "10.1-20mm (3)", ">20mm (5)"], index=0, horizontal=True)
 
     # --- BERECHNUNG UIATS ---
-    t_points = [t_age, t_sah, t_fam, t_eth, t_smk, t_htn, t_adpkd, t_drug, t_alc, t_cnp, t_thr, t_epi, 
-                t_size, t_morph, t_ratio, t_loc, t_growth, t_denovo, t_steno, t_mult, t_qol]
-    c_points = [c_life, c_neuro, c_coag, c_psych, c_complex, c_age, c_size_risk]
+    t_list = [t_age, t_sah, t_fam, t_eth, t_smk, t_htn, t_adpkd, t_drug, t_alc, t_cnp, t_thr, t_epi, 
+              t_size, t_morph, t_ratio, t_loc, t_growth, t_denovo, t_steno, t_mult, t_qol]
+    c_list = [c_life, c_neuro, c_coag, c_psych, c_complex, c_age, c_size_risk]
     
-    t_sum = sum(get_pts(p) for p in t_points)
-    c_sum = 5 + sum(get_pts(p) for p in c_points) # Inklusive Baseline 5
+    t_sum = sum(get_pts(p) for p in t_list)
+    c_sum = 5 + sum(get_pts(p) for p in c_list) # Inklusive 5 Punkte Baseline
     uiats_final = t_sum - c_sum
 
-    if uiats_final >= 3: rec = "Pro Behandlung (FAVORS TREATMENT)"
-    elif uiats_final <= -3: rec = "Pro Beobachtung (FAVORS CONSERVATIVE)"
-    else: rec = "Äquivokal (EQUIVOCAL / INDIVIDUALIZE)"
+    if uiats_final >= 3: rec = "BEHANDLUNG EMPFOHLEN"
+    elif uiats_final <= -3: rec = "BEOBACHTUNG EMPFOHLEN"
+    else: rec = "ÄQUIVOKAL / INDIVIDUALISIEREN"
 
     st.divider()
     res_col1, res_col2, res_col3 = st.columns(3)
     res_col1.metric("Summe Behandlung", f"{t_sum} Pkt")
     res_col2.metric("Summe Konservativ", f"{c_sum} Pkt")
-    res_col3.metric("UIATS Score (Net)", f"{uiats_final}", f"Empfehlung: {rec}", delta_color="normal")
+    res_col3.metric("UIATS Score (Netto)", f"{uiats_final}", f"Empfehlung: {rec}")
 
-# --- PHASES LOGIK (Kurzform) ---
+# --- PHASES LOGIK ---
 with tab2:
-    st.subheader("PHASES: 5-Year Rupture Risk")
-    # ... (PHASES Logik bleibt identisch zum Vorherigen Code) ...
-    p_sum = 0 # Platzhalter für die Berechnung
+    st.subheader("PHASES: 5-Jahres Rupturrisiko")
+    p_col1, p_col2 = st.columns(2)
+    
+    with p_col1:
+        p_pop = st.radio("Population", ["Andere (0)", "Japanisch (3)", "Finnisch (5)"], horizontal=True)
+        p_htn = st.radio("Hypertonie Anamnese", ["Nein (0)", "Ja (1)"], horizontal=True)
+        p_age_70 = st.radio("Alter >= 70 Jahre", ["Nein (0)", "Ja (1)"], horizontal=True)
+        
+    with p_col2:
+        p_size = st.radio("Größe (PHASES)", ["<7mm (0)", "7-9.9mm (3)", "10-19.9mm (6)", ">=20mm (10)"], horizontal=True)
+        p_sah_prev = st.radio("Frühere SAB (anderes Aneurysma)", ["Nein (0)", "Ja (1)"], horizontal=True)
+        p_site = st.radio("Lokalisation (PHASES)", ["ICA (0)", "MCA (2)", "ACA/Pcom/Posteriore Zirkulation (4)"], horizontal=True)
 
-# --- PDF EXPORT ---
-if st.button("Gesamt-Bericht als PDF speichern"):
-    # (PDF Generierung inklusive aller Details)
-    st.success("PDF wurde erstellt. (Download-Button erscheint hier)")
+    p_sum = sum(get_pts(x) for x in [p_pop, p_htn, p_age_70, p_size, p_sah_prev, p_site])
+    
+    # Risiko-Mapping
+    risks = {0: "0.7%", 3: "0.9%", 5: "1.3%", 6: "1.7%", 7: "3.2%", 10: "5.1%", 12: "8.4%", 14: "12.2%", 17: "18.5%", 20: ">25%"}
+    p_risk = next((v for k, v in sorted(risks.items(), reverse=True) if p_sum >= k), "0.7%")
+    
+    st.divider()
+    st.metric("PHASES Score", f"{p_sum} Punkte", f"Geschätztes 5-Jahres Risiko: {p_risk}")
+
+# --- PDF EXPORT (Vollständig) ---
+if st.button("Klinischen Bericht (PDF) generieren"):
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", 'B', 16)
+    pdf.cell(200, 10, "Klinischer Aneurysma-Bericht", 0, 1, 'C')
+    pdf.set_font("Arial", '', 10)
+    pdf.cell(200, 10, f"Patient: {patient_id} | Arzt: {clinician} | Datum: {datetime.now().strftime('%d.%m.%Y')}", 0, 1, 'C')
+    pdf.line(10, 30, 200, 30)
+    
+    pdf.ln(10)
+    pdf.set_font("Arial", 'B', 12)
+    pdf.cell(0, 10, f"I. UIATS Resultat: {uiats_final} Punkte", 0, 1)
+    pdf.set_font("Arial", '', 11)
+    pdf.cell(0, 7, f"Empfehlung: {rec}", 0, 1)
+    pdf.cell(0, 7, f"Behandlungspunkte: {t_sum} | Konservative Punkte: {c_sum}", 0, 1)
+    
+    pdf.ln(5)
+    pdf.set_font("Arial", 'B', 12)
+    pdf.cell(0, 10, f"II. PHASES Resultat: {p_sum} Punkte", 0, 1)
+    pdf.set_font("Arial", '', 11)
+    pdf.cell(0, 7, f"Geschätztes 5-Jahres Rupturrisiko: {p_risk}", 0, 1)
+    
+    pdf.ln(10)
+    pdf.set_font("Arial", 'I', 9)
+    pdf.multi_cell(0, 5, "Haftungsausschluss: Dieses Tool dient der klinischen Unterstützung und ersetzt nicht das fachärztliche Urteil. Die Entscheidung über eine Behandlung muss individuell unter Berücksichtigung aller klinischen Faktoren getroffen werden.")
+
+    pdf_output = pdf.output(dest='S').encode('latin-1', 'ignore')
+    st.download_button("PDF-Bericht herunterladen", data=pdf_output, file_name=f"Aneurysma_Bericht_{patient_id}.pdf", mime="application/pdf")
